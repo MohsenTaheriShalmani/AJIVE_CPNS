@@ -635,6 +635,7 @@ data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=FALSE)
 # result$rankJ
 # showHeatmaps(result)
 #ajive
+
 initial_signal_ranks <- c(50, 50) # set by looking at scree plots
 jive_results_Hippo_Caud <- ajive(blocks_Hippo_Caud, initial_signal_ranks)
 jive_results_Hippo_Caud$joint_rank
