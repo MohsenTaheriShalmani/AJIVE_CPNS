@@ -654,7 +654,8 @@ dpp2$pvalue
 diproperm::plotdpp(dpp2)
 
 ######################################
-# cut 
+# cut! we need to cut zero rows from Zcomp matrix.
+
 blocks_Hippo_Caud<-list("Hippo"=ZComp_pooled_Hippo_Normalized, "Caud"=ZComp_pooled_Caud_Normalized)
 data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=FALSE)
 n1<-dim(ZShape_pooled_Hippo)[1]+1
