@@ -235,7 +235,7 @@ for (i in 1:nTotalRadii) {
 
 #Hippo
 all_G1_G2<-abind(boundaryPlusSkeletal_G1,boundaryPlusSkeletal_G2)
-procAllG1_G2<-procGPA(all_G1_G2, scale = T)   # scale = T for shape analysis
+procAllG1_G2<-procGPA(all_G1_G2, scale = F)   # scale = T for shape analysis
 alignedAllG1_G2<-procAllG1_G2$rotated  #pooled group
 alignedSkeletalPlusBoundaryG1<-alignedAllG1_G2[,,1:nSamplesG1]  #G1 group
 alignedSkeletalPlusBoundaryG2<-alignedAllG1_G2[,,(nSamplesG1+1):(nSamplesG1+nSamplesG2)] #G2 group
@@ -246,7 +246,7 @@ boundaryAlignedG2<-alignedSkeletalPlusBoundaryG2[(nTotalRadii+1):(2*nTotalRadii)
 
 #Caud
 all_G3_G4<-abind(boundaryPlusSkeletal_G3,boundaryPlusSkeletal_G4)
-procAllG3_G4<-procGPA(all_G3_G4, scale = T)   # scale = T for shape analysis
+procAllG3_G4<-procGPA(all_G3_G4, scale = F)   # scale = T for shape analysis
 alignedAllG3_G4<-procAllG3_G4$rotated  #pooled group
 alignedSkeletalPlusBoundaryG3<-alignedAllG3_G4[,,1:nSamplesG3]  #G1 group
 alignedSkeletalPlusBoundaryG4<-alignedAllG3_G4[,,(nSamplesG3+1):(nSamplesG3+nSamplesG4)] #G2 group
@@ -328,6 +328,28 @@ open3d()
 spheres3d(x = 0, y = 0, z = 0, radius = 1,col = "lightblue", alpha=0.1)
 plot3d(t(DirectionsG3[1,,]),type="p",col = "blue",expand = 10,box=FALSE,add = TRUE)
 plot3d(t(DirectionsG4[1,,]),type="p",col = "red",expand = 10,box=FALSE,add = TRUE)
+
+#####################################################################################################
+#####################################################################################################
+# Check a sample just to make sure the correctness of the obtained radii and directions after alignment
+# we can skip this part 
+
+sampleNo<-6 #change it to check other samples
+
+sumDis<-0
+for (i in 1:nTotalRadii) {
+  temp1<-skeletalAlignedG1[i,,sampleNo]+DirectionsG1[i,,sampleNo]*radiiG1[i,sampleNo]
+  temp2<-boundaryAlignedG1[i,,sampleNo]
+  sumDis<-sumDis+norm(temp1-temp2,type = "2")
+}
+if(sumDis<1e-5){print("Perfect match! Radii and directions are acceptable.")}else{"Imperfect match!!! Do not proceed."}
+
+# plot 
+# here we should see only one color!!!
+plot3d(skeletalAlignedG1[,,sampleNo]+DirectionsG1[,,sampleNo]*radiiG1[,sampleNo],
+       type="p",col = "red" ,expand = 10,box=TRUE,add = TRUE)
+plot3d(boundaryAlignedG1[,,sampleNo],type="p",col = "blue" ,expand = 10,box=TRUE,add = TRUE)
+
 #####################################################################################################
 #####################################################################################################
 #################################### CPNS - CPNG  ###################################################
@@ -365,7 +387,7 @@ skelG2<-skeletalAlignedG2[skelRange,,]
 skelG3<-skeletalAlignedG3[skelRange,,]
 skelG4<-skeletalAlignedG4[skelRange,,]
 
-plot3d(skelG2[,,1],type="s", size=0.5,col = "blue",expand = 10,box=FALSE,add = TRUE)
+plot3d(skelG3[,,1],type="s", size=0.5,col = "blue",expand = 10,box=FALSE,add = TRUE)
 
 for (i in 1:nSamplesG1) {
   plot3d(skelG1[,,i],type="p", size=0.2,col = "blue",expand = 10,box=FALSE,add = TRUE)
@@ -452,9 +474,9 @@ for (i in c(1 : nTotalRadii)){
 # CPNG Pooled space 
 # CPNG: Construct composite Z matrix and perform PCA
 ZComp_pooled_Hippo <- rbind(meanSizePDMPooled_Hippo * ZShape_pooled_Hippo,
-                      meanSizePDMPooled_Hippo * normalizedSizePDMPooled_Hippo,
-                      rScaleFactors_pooled_Hippo * RStar_pooled_Hippo,
-                      uScaleFactors_pooled_Hippo * ZSpoke_pooled_Hippo)
+                            meanSizePDMPooled_Hippo * normalizedSizePDMPooled_Hippo,
+                            rScaleFactors_pooled_Hippo * RStar_pooled_Hippo,
+                            uScaleFactors_pooled_Hippo * ZSpoke_pooled_Hippo)
 
 dim(ZComp_pooled_Hippo) # dimention of the feature space
 plotEignmodes(ZComp_pooled_Hippo,mainTitle = "Pooled CPNG")
@@ -557,7 +579,8 @@ ZComp_G3<-ZComp_pooled_Caud[,1:nSamplesG3]
 ZComp_G4<-ZComp_pooled_Caud[,(nSamplesG3+1):(nSamplesG3+nSamplesG4)]
 
 
-
+#####################################################################################################
+#####################################################################################################
 #normalize 
 library(bestNormalize)
 
@@ -571,8 +594,11 @@ for (i in 1:dim(ZComp_pooled_Caud)[1]) {
   ZComp_pooled_Caud_Normalized[i,]<-boxcox(ZComp_pooled_Caud[i,]+bigNum)$x.t
 }
 
+plotEignmodes(ZComp_pooled_Caud_Normalized,mainTitle = "Pooled CPNG")
+#####################################################################################################
+#####################################################################################################
+#classification
 
-#######################################################################
 # diProperm
 library(diproperm)
 library(DWDLargeR)
@@ -581,40 +607,33 @@ library(r.jive)
 library(ajive)
 
 # # example for DiProPerm
-# data(mushrooms)
-X <- Matrix::t(mushrooms$X)
-mushroomMatrix<-SparseM::as.matrix(X)
-dim(mushroomMatrix)
-y <- mushrooms$y
-dpp <- DiProPerm(X=mushroomMatrix,y=y,B = 10)
-diproperm::plotdpp(dpp)
+# X <- Matrix::t(mushrooms$X) #NB! 8124 objects with 112 features 
+# y <- mushrooms$y            #NB! y labels 8124 objects
+# dpp <- DiProPerm(X=X,y=y,B = 10)
+# diproperm::plotdpp(dpp)
 
 # example for AJIVE
 # sample a toy dataset with true joint rank of 1
-blocks <- sample_toy_data(n=700, dx=170, dy=170)
-data_blocks_heatmap(blocks, show_color_bar=FALSE)
-initial_signal_ranks <- c(2, 3) # set by looking at scree plots
-jive_results <- ajive(blocks, initial_signal_ranks)
+# blocks <- sample_toy_data(n=700, dx=170, dy=170)
+# data_blocks_heatmap(blocks, show_color_bar=FALSE)
+# initial_signal_ranks <- c(2, 3) # set by looking at scree plots
+# jive_results <- ajive(blocks, initial_signal_ranks)
+# # estimated joint rank
+# jive_results$joint_rank
+# decomposition_heatmaps(blocks, jive_results)
+# jive_results$joint_scores
+# X=jive_results$block_decomps[[2]][['joint']][['full']]
+# y=c(rep(-1,10),rep(1,30))
+# dpp <- DiProPerm(X=X,y=y)
 
-# estimated joint rank
-jive_results$joint_rank
-decomposition_heatmaps(blocks, jive_results)
-jive_results$joint_scores
-jive_results$block_decomps[[2]][['joint']][['full']]
-y=c(rep(-1,10),rep(1,30))
-dpp <- DiProPerm(X=,y=y)
 
-
-# blocks_Hippo_Caud<-list("Hippo"=ZComp_pooled_Hippo_Normalized, "Caud"=ZComp_pooled_Caud_Normalized)
-n1<-dim(ZShape_pooled_Hippo)[1]+1
-n2<-dim(ZComp_pooled_Hippo_Normalized)[1]
-blocks_Hippo_Caud<-list("Hippo"=ZComp_pooled_Hippo_Normalized[c(1:10,n1:n2),],
-                        "Caud"=ZComp_pooled_Caud_Normalized[c(1:10,n1:n2),])
+blocks_Hippo_Caud<-list("Hippo"=ZComp_pooled_Hippo_Normalized, "Caud"=ZComp_pooled_Caud_Normalized)
 data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=FALSE)
-#jive
-result<-jive(blocks_Hippo_Caud)
-result$rankJ
-showHeatmaps(result)
+data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=FALSE)
+# #jive #Doesn't work properly
+# result<-jive(blocks_Hippo_Caud)
+# result$rankJ
+# showHeatmaps(result)
 #ajive
 initial_signal_ranks <- c(50, 50) # set by looking at scree plots
 jive_results_Hippo_Caud <- ajive(blocks_Hippo_Caud, initial_signal_ranks)
@@ -624,76 +643,43 @@ hippo_Joint<-jive_results_Hippo_Caud$block_decomps[[1]][['joint']][['full']]
 dim(hippo_Joint)
 # hippo_neg<-hippo_Joint[1:nSamplesG1,]
 # hippo_pos<-hippo_Joint[(nSamplesG1+1):(nSamplesG1+nSamplesG2),]
-X.t<-as.matrix.csr(hippo_Joint)
-y=c(rep(-1,nSamplesG1),rep(1,nSamplesG2))
-# dpp <- myDiProPerm(X=X.t, y=y, cores = 1, classifier = "md")
-dpp <- myDiProPerm(X=X.t, y=y, classifier = "dwd",cores = 1)
-dpp$pvalue
+X<-t(hippo_Joint)                          #NB! 117 objects with 694 features (each row one object!)
+y<-c(rep(-1,nSamplesG1),rep(1,nSamplesG2))   #NB! y labels 117 objects
+dpp1 <- DiProPerm(X=X, y=y, cores = 1, classifier = "md")
+dpp1$pvalue
+diproperm::plotdpp(dpp1)
+dpp2 <- DiProPerm(X=X, y=y, cores = 1, classifier = "dwd")
+dpp2$pvalue
+diproperm::plotdpp(dpp2)
 
-X.t<-as.matrix.csr(hippo_Joint)
-C = DWDLargeR::penaltyParameter(X.t, y, expon = 1, rmzeroFea = 0)
-result = DWDLargeR::genDWD(X.t, y, C = C, expon = 1, rmzeroFea = 0)
-w.obs <- result$w/norm(result$w,type = "2")
-w.obs%*%as.matrix(X.t)
-hist(as.matrix(t(X.t))%*% w.obs)
-#####################################################################################################
-#####################################################################################################
-# AJIVE by PCA
-
-# vectorized skeletal PDMs on unit sphere as PCA coordinate
-pdmMatrixSkelG1<-c()
-for (i in 1:dim(skelG1)[3]) {
-  pdmMatrixSkelG1<-cbind(pdmMatrixSkelG1,array(t(skelG1[,,i]),
-                                               dim = c(length(skelG1[,,i]),1)))
-}
-pdmMatrixSkelG2<-c()
-for (i in 1:dim(skelG2)[3]) {
-  pdmMatrixSkelG2<-cbind(pdmMatrixSkelG2,array(t(skelG2[,,i]),
-                                               dim = c(length(skelG2[,,i]),1)))
-}
-pdmMatrixSkelG3<-c()
-for (i in 1:dim(skelG3)[3]) {
-  pdmMatrixSkelG3<-cbind(pdmMatrixSkelG3,array(t(skelG3[,,i]),
-                                               dim = c(length(skelG3[,,i]),1)))
-}
-pdmMatrixSkelG4<-c()
-for (i in 1:dim(skelG4)[3]) {
-  pdmMatrixSkelG4<-cbind(pdmMatrixSkelG4,array(t(skelG4[,,i]),
-                                               dim = c(length(skelG4[,,i]),1)))
-}
-ZShape_G1_PCA<-pdmMatrixSkelG1
-ZShape_G2_PCA<-pdmMatrixSkelG2
-ZShape_G3_PCA<-pdmMatrixSkelG3
-ZShape_G4_PCA<-pdmMatrixSkelG4
-plotEignmodes(matrixZ = ZShape_G1_PCA,mainTitle = paste("PCA eigenmode contributions on skeletal PDM"))
-plotEignmodes(matrixZ = ZShape_G2_PCA,mainTitle = paste("PCA eigenmode contributions on skeletal PDM"))
-plotEignmodes(matrixZ = ZShape_G3_PCA,mainTitle = paste("PCA eigenmode contributions on skeletal PDM"))
-plotEignmodes(matrixZ = ZShape_G4_PCA,mainTitle = paste("PCA eigenmode contributions on skeletal PDM"))
-
-ZShape_pooled_Hippo<-cbind(ZShape_G1_PCA,ZShape_G2_PCA)
-ZShape_pooled_Caud<-cbind(ZShape_G3_PCA,ZShape_G4_PCA)
-
-
-bigNum<-1000 #boxcox only accept positive values
-Zshape_pooled_Hippo_Normalized<-array(NA,dim = dim(ZShape_pooled_Hippo))
-for (i in 1:dim(ZShape_pooled_Hippo)[1]) {
-  Zshape_pooled_Hippo_Normalized[i,]<-boxcox(ZShape_pooled_Hippo[i,]+bigNum)$x.t
-}
-Zshape_pooled_Caud_Normalized<-array(NA,dim = dim(ZShape_pooled_Caud))
-for (i in 1:dim(ZShape_pooled_Caud)[1]) {
-  Zshape_pooled_Caud_Normalized[i,]<-boxcox(ZShape_pooled_Caud[i,]+bigNum)$x.t
-}
-
-blocks_Hippo_Caud<-list("Hippo"=Zshape_pooled_Caud_Normalized[1:20,], "Caud"=Zshape_pooled_Hippo_Normalized[1:20,])
-data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=TRUE)
-initial_signal_ranks <- c(10,5) # set by looking at scree plots
-jive_results_Hippo_Caud <- ajive(blocks_Hippo_Caud, initial_signal_ranks)
+######################################
+# cut 
+blocks_Hippo_Caud<-list("Hippo"=ZComp_pooled_Hippo_Normalized, "Caud"=ZComp_pooled_Caud_Normalized)
+data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=FALSE)
+n1<-dim(ZShape_pooled_Hippo)[1]+1
+n2<-dim(ZComp_pooled_Hippo_Normalized)[1]
+blocks_Hippo_Caud<-list("Hippo"=ZComp_pooled_Hippo_Normalized[c(1:20,n1:n2),],
+                        "Caud"=ZComp_pooled_Caud_Normalized[c(1:20,n1:n2),])
+data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=FALSE)
+# #jive
+# result<-jive(blocks_Hippo_Caud)
+# result$rankJ
+# showHeatmaps(result)
+#ajive
+initial_signal_ranks <- c(50, 50) # set by looking at scree plots
+jive_results_Hippo_Caud <- ajive(blocks_Hippo_Caud, initial_signal_ranks,joint_rank = 45)
 jive_results_Hippo_Caud$joint_rank
 decomposition_heatmaps(blocks_Hippo_Caud, jive_results_Hippo_Caud)
-
 hippo_Joint<-jive_results_Hippo_Caud$block_decomps[[1]][['joint']][['full']]
 dim(hippo_Joint)
-y=c(rep(-1,nSamplesG1),rep(1,nSamplesG2))
-dpp <- DiProPerm(X=hippo_Joint,y=y)
-
+# hippo_neg<-hippo_Joint[1:nSamplesG1,]
+# hippo_pos<-hippo_Joint[(nSamplesG1+1):(nSamplesG1+nSamplesG2),]
+X<-t(hippo_Joint)                          #NB! 117 objects with 694 features (each row one object!)
+y<-c(rep(-1,nSamplesG1),rep(1,nSamplesG2))   #NB! y labels 117 objects
+dpp1 <- DiProPerm(X=X, y=y, cores = 1, classifier = "md")
+dpp1$pvalue
+diproperm::plotdpp(dpp1)
+dpp2 <- DiProPerm(X=X, y=y, cores = 1, classifier = "dwd")
+dpp2$pvalue
+diproperm::plotdpp(dpp2)
 
