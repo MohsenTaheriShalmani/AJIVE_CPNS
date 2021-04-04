@@ -1,13 +1,13 @@
 library(shapes)
 library(rgl)
-library(matlib)
-library(RiemBase)
-library(mvtnorm)
-library(matrixcalc) 
-library(tictoc)
-library(caret)
-library(e1071)
-library("kdensity")
+# library(matlib)
+# library(RiemBase)
+# library(mvtnorm)
+# library(matrixcalc) 
+# library(tictoc)
+# library(caret)
+# library(e1071)
+# library("kdensity")
 
 #####################################################################################################
 #####################################################################################################
@@ -357,10 +357,10 @@ plot3d(boundaryAlignedG1[,,sampleNo],type="p",col = "blue" ,expand = 10,box=TRUE
 #####################################################################################################
 # CPNS and CPNG
 
-library(DWD)
-library(caret)
-library(e1071)
-library("kdensity")
+# library(DWD)
+# library(caret)
+# library(e1071)
+# library("kdensity")
 
 # plot function
 plotEignmodes <- function(matrixZ,mainTitle) {
@@ -481,9 +481,9 @@ ZComp_pooled_Hippo <- rbind(meanSizePDMPooled_Hippo * ZShape_pooled_Hippo,
 dim(ZComp_pooled_Hippo) # dimention of the feature space
 plotEignmodes(ZComp_pooled_Hippo,mainTitle = "Pooled CPNG")
 
-# extract ZComp features of G1 and G2
-ZComp_G1<-ZComp_pooled_Hippo[,1:nSamplesG1]
-ZComp_G2<-ZComp_pooled_Hippo[,(nSamplesG1+1):(nSamplesG1+nSamplesG2)]
+# # extract ZComp features of G1 and G2
+# ZComp_G1<-ZComp_pooled_Hippo[,1:nSamplesG1]
+# ZComp_G2<-ZComp_pooled_Hippo[,(nSamplesG1+1):(nSamplesG1+nSamplesG2)]
 
 #####################################################################################################
 #####################################################################################################
@@ -574,9 +574,9 @@ ZComp_pooled_Caud <- rbind(meanSizePDMPooled_Caud * ZShape_pooled_Caud,
 dim(ZComp_pooled_Caud) # dimention of the feature space
 plotEignmodes(ZComp_pooled_Caud,mainTitle = "Pooled CPNG")
 
-# extract ZComp features of G3 and G4
-ZComp_G3<-ZComp_pooled_Caud[,1:nSamplesG3]
-ZComp_G4<-ZComp_pooled_Caud[,(nSamplesG3+1):(nSamplesG3+nSamplesG4)]
+# # extract ZComp features of G3 and G4
+# ZComp_G3<-ZComp_pooled_Caud[,1:nSamplesG3]
+# ZComp_G4<-ZComp_pooled_Caud[,(nSamplesG3+1):(nSamplesG3+nSamplesG4)]
 
 
 #####################################################################################################
