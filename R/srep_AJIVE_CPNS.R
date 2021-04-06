@@ -594,7 +594,7 @@ for (i in 1:dim(ZComp_pooled_Caud)[1]) {
   ZComp_pooled_Caud_Normalized[i,]<-boxcox(ZComp_pooled_Caud[i,]+bigNum)$x.t
 }
 
-plotEignmodes(ZComp_pooled_Caud_Normalized,mainTitle = "Pooled CPNG")
+#plotEignmodes(ZComp_pooled_Caud_Normalized,mainTitle = "Pooled CPNG")
 #####################################################################################################
 #####################################################################################################
 #classification
@@ -656,27 +656,30 @@ diproperm::plotdpp(dpp2)
 ######################################
 # cut! we need to cut zero rows from Zcomp matrix.
 
-blocks_Hippo_Caud<-list("Hippo"=ZComp_pooled_Hippo_Normalized, "Caud"=ZComp_pooled_Caud_Normalized)
-data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=FALSE)
+blocks_Hippo_Caud<-list("Hippo"=t(ZComp_pooled_Hippo_Normalized), "Caud"=t(ZComp_pooled_Caud_Normalized))
+data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=TRUE)
 n1<-dim(ZShape_pooled_Hippo)[1]+1
 n2<-dim(ZComp_pooled_Hippo_Normalized)[1]
-blocks_Hippo_Caud<-list("Hippo"=ZComp_pooled_Hippo_Normalized[c(1:20,n1:n2),],
-                        "Caud"=ZComp_pooled_Caud_Normalized[c(1:20,n1:n2),])
+blocks_Hippo_Caud<-list("Hippo"=t(ZComp_pooled_Hippo_Normalized[c(1:20,n1:n2),]),
+                        "Caud"=t(ZComp_pooled_Caud_Normalized[c(1:20,n1:n2),]))
 data_blocks_heatmap(blocks_Hippo_Caud, show_color_bar=FALSE)
 # #jive
 # result<-jive(blocks_Hippo_Caud)
 # result$rankJ
 # showHeatmaps(result)
 #ajive
-initial_signal_ranks <- c(50, 50) # set by looking at scree plots
-jive_results_Hippo_Caud <- ajive(blocks_Hippo_Caud, initial_signal_ranks,joint_rank = 45)
+r_init = 50
+initial_signal_ranks <- c(r_init, r_init) # set by looking at scree plots
+jive_results_Hippo_Caud <- ajive(blocks_Hippo_Caud, initial_signal_ranks, joint_rank = 45)
 jive_results_Hippo_Caud$joint_rank
 decomposition_heatmaps(blocks_Hippo_Caud, jive_results_Hippo_Caud)
 hippo_Joint<-jive_results_Hippo_Caud$block_decomps[[1]][['joint']][['full']]
+hippo_Joint <- jive_results_Hippo_Caud$joint_scores
 dim(hippo_Joint)
 # hippo_neg<-hippo_Joint[1:nSamplesG1,]
 # hippo_pos<-hippo_Joint[(nSamplesG1+1):(nSamplesG1+nSamplesG2),]
-X<-t(hippo_Joint)                          #NB! 117 objects with 694 features (each row one object!)
+#X<-t(hippo_Joint)                          #NB! 117 objects with 694 features (each row one object!)
+X<-hippo_Joint
 y<-c(rep(-1,nSamplesG1),rep(1,nSamplesG2))   #NB! y labels 117 objects
 dpp1 <- DiProPerm(X=X, y=y, cores = 1, classifier = "md")
 dpp1$pvalue
@@ -684,4 +687,6 @@ diproperm::plotdpp(dpp1)
 dpp2 <- DiProPerm(X=X, y=y, cores = 1, classifier = "dwd")
 dpp2$pvalue
 diproperm::plotdpp(dpp2)
-
+# dev.set()
+# dev.list()
+# dev.close(which=mydev)
