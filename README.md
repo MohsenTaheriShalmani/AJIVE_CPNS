@@ -1,8 +1,8 @@
 This repository is in accordance with the below publication.
 
 ## Article
-"Analysis of joint shape variation from multi-object complexes.
-Liu, Zhiyuan, Jörn Schulz, Mohsen Taheri, Martin Styner, James Damon, Stephen Pizer, and J. S. Marron.
+### "Analysis of joint shape variation from multi-object complexes.
+### Liu, Zhiyuan, Jörn Schulz, Mohsen Taheri, Martin Styner, James Damon, Stephen Pizer, and J. S. Marron.
 
 ### Links
 
