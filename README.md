@@ -17,3 +17,6 @@ Citation:
   year={2023},
   publisher={Springer}
 }
+
+![NEUJIVE_Framework](https://github.com/MohsenTaheriShalmani/Joint_Shape_Variation_Analysis_by_CPNS/assets/19237855/24c67496-8b54-4ec2-a1eb-d1bbfef41225)
+
