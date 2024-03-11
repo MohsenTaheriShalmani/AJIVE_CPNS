@@ -4,8 +4,6 @@ This repository is in accordance with the below publication.
 ### "Analysis of joint shape variation from multi-object complexes.
 ### Liu, Zhiyuan, Jörn Schulz, Mohsen Taheri, Martin Styner, James Damon, Stephen Pizer, and J. S. Marron.
 
-### Links
-
 [https://doi.org/10.1007/s10851-022-01136-5]
 
 [Analysis of Joint Shape Variation from Multi-Object Complexes.pdf](https://github.com/MohsenTaheriShalmani/Joint_Shape_Variation_Analysis_by_CPNS/files/14556893/Analysis.of.Joint.Shape.Variation.from.Multi-Object.Complexes.pdf)
