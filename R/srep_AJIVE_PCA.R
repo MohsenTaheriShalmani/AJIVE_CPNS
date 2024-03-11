@@ -541,10 +541,10 @@ library(ajive)
 
 # example for AJIVE
 # sample a toy dataset with true joint rank of 1
-# blocks <- sample_toy_data(n=700, dx=170, dy=170)
+# blocks <- sample_toy_data(n=700, dx=200, dy=170)
+# dim(blocks$`1`) #NB!!! in block 1 & block 2 number of rows (features) must be equal not columns!!!
+# dim(blocks$`2`)
 # data_blocks_heatmap(blocks, show_color_bar=FALSE)
-# initial_signal_ranks <- c(2, 3) # set by looking at scree plots
-# jive_results <- ajive(blocks, initial_signal_ranks)
 # # estimated joint rank
 # jive_results$joint_rank
 # decomposition_heatmaps(blocks, jive_results)

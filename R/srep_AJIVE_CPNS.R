@@ -614,7 +614,9 @@ library(ajive)
 
 # example for AJIVE
 # sample a toy dataset with true joint rank of 1
-# blocks <- sample_toy_data(n=700, dx=170, dy=170)
+# blocks <- sample_toy_data(n=200, dx=100, dy=150)
+# dim(blocks$`1`) #NB!!! in block 1 & block 2 number of rows (samples i.e. observations) must be equal not columns (features)!!!
+# dim(blocks$`2`)
 # data_blocks_heatmap(blocks, show_color_bar=FALSE)
 # initial_signal_ranks <- c(2, 3) # set by looking at scree plots
 # jive_results <- ajive(blocks, initial_signal_ranks)
