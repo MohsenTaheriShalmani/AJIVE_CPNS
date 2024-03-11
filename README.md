@@ -1,4 +1,5 @@
-This repository is in accordance with the below publication:\\
+This repository is in accordance with the below publication.
+
 "Analysis of joint shape variation from multi-object complexes.
 Liu, Zhiyuan, Jörn Schulz, Mohsen Taheri, Martin Styner, James Damon, Stephen Pizer, and J. S. Marron.
 
