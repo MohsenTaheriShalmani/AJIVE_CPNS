@@ -6,6 +6,8 @@ Liu, Zhiyuan, Jörn Schulz, Mohsen Taheri, Martin Styner, James Damon, Stephen P
 
 ### Links
 
+[https://doi.org/10.1007/s10851-022-01136-5]
+
 [Analysis of Joint Shape Variation from Multi-Object Complexes.pdf](https://github.com/MohsenTaheriShalmani/Joint_Shape_Variation_Analysis_by_CPNS/files/14556893/Analysis.of.Joint.Shape.Variation.from.Multi-Object.Complexes.pdf)
 
 ### Cite
