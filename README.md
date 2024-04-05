@@ -1,4 +1,4 @@
-This repository is in accordance with the below publication.
+This repository is in accordance with the below publication that I contributed as a co-author.
 
 ## Article
 ### "Analysis of joint shape variation from multi-object complexes.
